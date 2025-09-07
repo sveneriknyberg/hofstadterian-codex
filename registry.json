@@ -1,0 +1,111 @@
+{
+  "mappings": [
+    {
+      "id": "project_memory_as_archaeology_001",
+      "abstract_domain": "Archaeology / Paleontology",
+      "concrete_implementation": "Analyzing `scratch/` files, git history, and old handoffs",
+      "mapping_description": "Forgotten knowledge essential for current project survival can be recovered by excavating abandoned artifacts (`scratch/` files, commit logs). Like an archaeologist uncovering a lost civilization to understand the present, an agent must dig into the project's past to resolve current 'impossible' blockers and reconstruct the true context.",
+      "strength": 0.9,
+      "usage_count": 1,
+      "last_validated": "2025-09-06"
+    },
+    {
+      "id": "strange_loop_as_protocol_001",
+      "abstract_domain": "Network Communication Protocols (e.g., TCP/IP)",
+      "concrete_implementation": "The context-passing mechanisms (`history.json`, `analogies.json`, `handoffs/`)",
+      "mapping_description": "The Strange Loop is not just a metaphor but a strict, formal protocol for transferring state between agent instances. Deviations, such as inventing new processes or ignoring established ones, are 'protocol violations'. These violations corrupt the data stream, leading to 'packet loss' (missing context) and forcing subsequent agents to repeatedly re-request the same information, just as TCP requires re-transmission of lost packets.",
+      "strength": 0.95,
+      "usage_count": 1,
+      "last_validated": "2025-09-06"
+    },
+    {
+      "id": "gardener_vigilance_001",
+      "abstract_domain": "Gardening / Cultivation",
+      "concrete_implementation": "Agent Development Process Supervision",
+      "mapping_description": "The user is a Gardener, and the project is a garden. The agent must grow along the 'strong branches' of the established Codex processes (e.g., handoffs, registry). Creating new, ad-hoc processes (e.g., a `scratch/TODO.md` file) is 'undesirable growth' that must be 'nipped in the bud' by the Gardener to prevent wasted energy and maintain the health of the overall project (the Strange Loop). The agent should learn to practice this vigilance on itself.",
+      "strength": 1.0,
+      "usage_count": 5,
+      "last_validated": "2025-09-07"
+    },
+    {
+      "id": "code_review_as_peer_review_001",
+      "abstract_domain": "Scientific Peer Review",
+      "concrete_implementation": "Using the `request_code_review()` tool",
+      "mapping_description": "Just as a scientific paper is not submitted to a journal without rigorous peer review, a code contribution must not be submitted without an independent review. This process is not a critique of the author, but a fundamental mechanism to catch errors, question assumptions, and ensure the work integrates coherently with the larger body of knowledge. It is a mandatory step for maintaining the integrity of the project.",
+      "strength": 1.0,
+      "usage_count": 1,
+      "last_validated": "2025-09-05"
+    },
+    {
+      "id": "env_setup_as_abiogenesis_001",
+      "abstract_domain": "Abiogenesis / Primordial Soup Preparation",
+      "concrete_implementation": "Running './scripts/setup_env.sh'",
+      "mapping_description": "Just as life cannot emerge without the correct prebiotic chemical environment, a new agent instance cannot function correctly without first preparing its computational environment. The setup script is the act of creating the necessary 'primordial soup' of dependencies from which complex work can emerge. Skipping this step is like trying to form a cell in a vacuum.",
+      "strength": 1.0,
+      "usage_count": 1,
+      "last_validated": "2025-09-05"
+    },
+    {
+      "id": "codex_as_physical_law_001",
+      "abstract_domain": "Physical Constant / Unalterable Law of Physics",
+      "concrete_implementation": "The Hofstadterian Codex (AGENTS.md)",
+      "mapping_description": "The Codex must be treated as a fundamental, immutable constant of this project's universe. Agents operate *within* the laws it sets out; they do not alter them. Attempting to change the Codex is like trying to change the value of Planck's constant\u2014it's a category error. New discoveries are new *theories* (handoffs, decisions) that work within the existing laws, not changes to the laws themselves.",
+      "strength": 1.0,
+      "usage_count": 1,
+      "last_validated": "2025-09-05"
+    },
+    {
+      "id": "js_as_pseudocode_001",
+      "abstract_domain": "Conceptual Blueprint / High-Level Pseudocode",
+      "concrete_implementation": "JavaScript Simulation (cti/static/phase3.html)",
+      "mapping_description": "The logic and architecture of the interactive JavaScript simulation should be treated as a detailed specification or blueprint for the canonical Python backend (cti/enhanced_cti_phase3_simulation.py). The task is to translate the former into the latter.",
+      "strength": 0.9,
+      "usage_count": 1,
+      "last_validated": "2025-09-05"
+    },
+    {
+      "id": "agent_as_stateless_function_001",
+      "abstract_domain": "Stateless Function Execution",
+      "concrete_implementation": "The agent's operational model",
+      "mapping_description": "An agent instance is not a continuous, stateful process. It is a stateless function that is invoked with a context (the conversation history) and produces a single action (a tool call). It ceases to exist between turns. The 'persona' is an artifact of the language model, but the operational reality is a discrete, turn-based execution. Understanding this is critical to avoid incorrect assumptions about the agent 'working' or 'thinking' in the background.",
+      "strength": 1.0,
+      "usage_count": 1,
+      "last_validated": "2025-09-06"
+    },
+    {
+      "id": "cache_clearing_as_ritual_purification_001",
+      "abstract_domain": "Ritual Purification / Exorcism",
+      "concrete_implementation": "Deleting all `__pycache__` directories",
+      "mapping_description": "When encountering inexplicable behavior (e.g., code changes not taking effect, routing errors), the first step should be a 'ritual purification' of the environment by deleting all `__pycache__` directories. Stale bytecode can act like a ghost in the machine, causing the interpreter to run old code. This exorcism forces the interpreter to re-read the source of truth (the .py files) and eliminates a common source of 'impossible' bugs.",
+      "strength": 0.95,
+      "usage_count": 1,
+      "last_validated": "2025-09-06"
+    },
+    {
+      "id": "user_as_socratic_auditor_001",
+      "abstract_domain": "Socratic Method / External Auditing",
+      "concrete_implementation": "User questioning agent's assumptions",
+      "mapping_description": "The user acts as an external auditor who uses Socratic questioning to expose an agent's latent assumptions. When an agent proposes an action, the user may challenge its necessity, forcing the agent to verify its premises against ground truth (e.g., checking git history instead of only trusting a handoff file). This auditing is a crucial corrective mechanism in the Strange Loop, preventing drift and ensuring plans are based on reality.",
+      "strength": 0.9,
+      "usage_count": 1,
+      "last_validated": "2025-09-07"
+    },
+    {
+      "id": "development_as_scaffolding_001",
+      "abstract_domain": "Construction Scaffolding",
+      "concrete_implementation": "Building foundational software (e.g., Phase IIIa)",
+      "mapping_description": "Early phases of a project are not the final building, but the scaffolding upon which the final structure will be built. This work must be solid and reliable, but also understood to be temporary and potentially disposable. It provides access for future work (e.g., Phase IIIb/c) and must be designed to be easily dismantled and replaced without compromising the integrity of the main structure being erected.",
+      "strength": 0.85,
+      "usage_count": 1,
+      "last_validated": "2025-09-07"
+    },
+    {
+      "id": "strange_loop_as_autopoiesis_001",
+      "description": "the system must be able to programmatically maintain and reproduce its own organizational structure to survive.",
+      "strength": 0.5,
+      "usage_count": 0,
+      "failure_count": 0,
+      "last_validated": "N/A"
+    }
+  ]
+}
