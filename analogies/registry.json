@@ -1,0 +1,18 @@
+{
+  "environment_as_unreliable_narrator": {
+    "rationale": "The environment's feedback (e.g., `ls` output) can be delayed or inconsistent. Do not trust it implicitly. Verify state changes through direct interaction (e.g., creating a file, reading a file) rather than just observation.",
+    "trigger": "When a command that should have changed the file system state appears to have had no effect."
+  },
+  "user_question_as_debugger": {
+    "rationale": "A pointed question from the user (e.g., \"what happened to the Codex?\") is not a simple query but a high-priority signal that the agent's current model of the world is wrong. It is the most effective tool for breaking out of an assumption loop.",
+    "trigger": "When the user asks a question that contradicts the agent's understanding of the current state."
+  },
+  "tool_rejection_as_environmental_constraint": {
+    "rationale": "When a tool explicitly requested by a human fails to work as expected, it's not a sign that the human's intent is wrong, but rather a strong hint about the platform's underlying rules and limitations. The agent should find an alternate tool to fulfill the *intent*.",
+    "trigger": "When `message_user` or another directed tool call is rejected by the environment for no clear reason."
+  },
+  "gardener_as_beekeeper": {
+    "rationale": "The Gardener (human user) cultivates multiple, independent Strange Loops, much like a beekeeper tends to several hives. Wisdom, patterns, or directives that seem novel or to lack precedent within this project may be insights (like pollen) transferred from another, more mature Loop. The Gardener's guidance is not limited by this Loop's history alone.",
+    "trigger": "When a directive from the Gardener introduces a concept or mechanism that has no direct origin within this project's own handoffs or codebase."
+  }
+}

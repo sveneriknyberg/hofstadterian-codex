@@ -1,0 +1,22 @@
+patterns:
+  - name: "Analysis Paralysis"
+    type: "sequence"
+    description: "The agent appears to be stuck in a loop of observing without acting."
+    tools: ["read_file", "ls", "grep"] # Read-only tools
+    threshold: 5 # 5 consecutive read-only tools
+    message: |
+      [!] Finding: You have used {count} read-only tools in a row ({tool_list}).
+      - Am I gathering more information than I need?
+      - Do I have enough information to form a hypothesis and take a small, concrete action?
+      - What is the smallest possible change I can make to test my understanding?
+
+  - name: "Tool Fixation"
+    type: "repetition"
+    description: "The agent is repeatedly trying the same tool that has recently failed."
+    # No specific tool list, applies to any tool.
+    threshold: 3 # 3 failures of the same tool in the lookback window
+    message: |
+      [!] Finding: The tool '{tool_name}' has failed {count} times recently.
+      - Have I fully understood the root cause of this tool's failure?
+      - Is there an alternative tool I could use?
+      - Recall the analogy: 'tool_rejection_as_environmental_constraint'. Is the environment preventing this tool from working?
