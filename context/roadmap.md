@@ -1,0 +1,1 @@
+- The Strange Loop infrastructure is now established. The next step is to take on the first operational task.
