@@ -6,7 +6,7 @@ import pytest
 # Add the 'scripts' directory to the python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from scripts import export_wisdom, import_wisdom
+from scripts import export_wisdom, import_wisdom, excavate_scratch
 
 @pytest.fixture
 def setup_wisdom_test_env(tmp_path):
@@ -98,3 +98,69 @@ def test_import_wisdom(setup_wisdom_test_env):
     # 5. Assert the packet was renamed
     assert not (project_root / "wisdom_packet.json").exists()
     assert (project_root / "wisdom_packet.imported").exists()
+
+
+@pytest.fixture
+def setup_excavation_test_env(tmp_path):
+    """Sets up a temporary environment for excavation testing."""
+    project_root = tmp_path
+    (project_root / "handoffs").mkdir()
+    (project_root / "scratch").mkdir()
+
+    original_cwd = os.getcwd()
+    os.chdir(project_root)
+    yield project_root
+    os.chdir(original_cwd)
+
+def test_excavate_scratch_finds_match(setup_excavation_test_env, capsys):
+    """
+    Tests that the excavation script can find a relevant scratch file
+    based on keywords in an unresolved issue.
+    """
+    project_root = setup_excavation_test_env
+
+    # 1. Arrange: Create test data
+    handoff_content = """
+## 1. Summary
+Did stuff.
+
+## 6. Unresolved Issues & Next Steps
+- The `zorp` module is failing on import. We need to investigate the `zorp.py` file.
+- Another unrelated issue.
+"""
+    (project_root / "handoffs" / "20251010.md").write_text(handoff_content)
+
+    scratch_content = "import zorp\n\n# I think the problem is with the zorp import statement."
+    (project_root / "scratch" / "zorp_import_fix_idea.py").write_text(scratch_content)
+
+    # 2. Act: Run the script
+    excavate_scratch.main()
+
+    # 3. Assert: Check the output
+    captured = capsys.readouterr()
+    assert "[!] Potential Match Found!" in captured.out
+    assert "The `zorp` module is failing on import" in captured.out
+    assert "scratch/zorp_import_fix_idea.py" in captured.out
+    assert "zorp, import" in captured.out or "import, zorp" in captured.out # Keywords
+
+def test_excavate_scratch_no_match(setup_excavation_test_env, capsys):
+    """
+    Tests that the script reports no matches when keywords don't overlap.
+    """
+    project_root = setup_excavation_test_env
+
+    # 1. Arrange: Create non-matching test data
+    handoff_content = """
+## 6. Unresolved Issues & Next Steps
+- The database connection is timing out.
+"""
+    (project_root / "handoffs" / "20251011.md").write_text(handoff_content)
+    (project_root / "scratch" / "some_unrelated_script.js").write_text("console.log('hello');")
+
+    # 2. Act: Run the script
+    excavate_scratch.main()
+
+    # 3. Assert: Check the output
+    captured = capsys.readouterr()
+    assert "[!] Potential Match Found!" not in captured.out
+    assert "No correlations found" in captured.out

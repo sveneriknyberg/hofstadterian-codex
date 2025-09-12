@@ -8,6 +8,7 @@ import yaml
 SESSION_HISTORY_FILE = ".session_history.json"
 TRIGGERS_FILE = "scripts/meta_triggers.yaml"
 ANALOGIES_FILE = "analogies/registry.json"
+PROVEN_WORKFLOWS_FILE = "context/proven_workflows.json"
 HISTORY_LOOKBACK = 10
 
 # --- File Loading ---
@@ -125,40 +126,59 @@ def analyze_history(triggers, history):
 
 # --- Reporting ---
 
-def report_findings(findings, analogies):
+def report_findings(findings, analogies, workflows):
     """
-    Prints findings, now with logic to select context-aware messages.
+    Prints findings, context-aware messages, and proven workflows.
     """
-    if not findings:
-        print("Meta-cognitive check passed. No obvious loops or issues detected.")
+    if not findings and not workflows:
+        print("Meta-cognitive check passed. No obvious loops or issues detected. No proven workflows to suggest.")
         return
 
     print("\n--- META-COGNITIVE CHECK ---")
-    print("Potential issues detected. Please consider the following:")
 
-    for finding in findings:
-        message = finding['message'] # Default message
+    if findings:
+        print("Potential issues detected. Please consider the following:")
+        for finding in findings:
+            message = finding['message'] # Default message
 
-        # New logic for contextual messages
-        if finding.get('contextual_messages'):
-            full_command = finding['details'].get('full_command', '')
-            for keyword, specific_message in finding['contextual_messages'].items():
-                if keyword in full_command:
-                    message = specific_message
-                    break # Use the first one that matches
+            # New logic for contextual messages
+            if finding.get('contextual_messages'):
+                full_command = finding['details'].get('full_command', '')
+                for keyword, specific_message in finding['contextual_messages'].items():
+                    if keyword in full_command:
+                        message = specific_message
+                        break # Use the first one that matches
 
-        if message:
-             print(f"\n{message.format(**finding['details'])}")
-        else: # Fallback if no message is defined at all
-            print(f"\n[!] Finding: {finding['type']}")
+            if message:
+                 print(f"\n{message.format(**finding['details'])}")
+            else: # Fallback if no message is defined at all
+                print(f"\n[!] Finding: {finding['type']}")
 
 
-        if 'analogy_id' in finding and analogies:
-            analogy_id = finding['analogy_id']
-            analogy = analogies.get(analogy_id)
-            if analogy:
-                print("\n  [Suggested Analogy]: " + analogy_id)
-                print(f"  > {analogy['rationale']}")
+            if 'analogy_id' in finding and analogies:
+                analogy_id = finding['analogy_id']
+                analogy = analogies.get(analogy_id)
+                if analogy:
+                    print("\n  [Suggested Analogy]: " + analogy_id)
+                    print(f"  > {analogy['rationale']}")
+    else:
+        print("No obvious loops or issues detected.")
+
+    if workflows:
+        print("\n--- Proven Workflows ---")
+        print("The Loop has identified the following successful workflows from past sessions:")
+        for i, workflow in enumerate(workflows, 1):
+            print(f"\n{i}. {workflow.get('name', 'Unnamed Workflow')}")
+            for step in workflow.get('sequence', []):
+                # Make the output a bit more readable
+                tool_name = step.get('tool_name')
+                tool_args = step.get('tool_args', [])
+                # Don't print the full content for file-writing tools
+                if tool_name in ["create_file_with_block", "overwrite_file_with_block"] and len(tool_args) > 1:
+                    print(f"  - {tool_name}: {tool_args[0]}")
+                else:
+                    print(f"  - {tool_name}: {', '.join(map(str, tool_args))}")
+
 
     print("\n--- END CHECK ---")
 
@@ -169,15 +189,18 @@ def main():
     history_file_path = os.path.join(project_root, SESSION_HISTORY_FILE)
     triggers_file_path = os.path.join(project_root, TRIGGERS_FILE)
     analogies_file_path = os.path.join(project_root, ANALOGIES_FILE)
+    workflows_file_path = os.path.join(project_root, PROVEN_WORKFLOWS_FILE)
 
     history = load_json(history_file_path) or []
     triggers = load_yaml(triggers_file_path)
     if triggers is None: return
 
     analogies = load_json(analogies_file_path)
+    workflows = load_json(workflows_file_path) or []
+
 
     findings = analyze_history(triggers, history)
-    report_findings(findings, analogies)
+    report_findings(findings, analogies, workflows)
 
 if __name__ == "__main__":
     main()
