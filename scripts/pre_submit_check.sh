@@ -61,7 +61,7 @@ fi
 
 # --- Check 4: Run unit tests ---
 echo "[4/4] Running unit tests..."
-if pytest; then
+if python3 -m pytest; then
     echo "  [PASS] All unit tests passed."
 else
     echo "  [FAIL] Unit tests failed. Please fix them before submitting."
