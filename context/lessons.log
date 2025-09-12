@@ -1,0 +1,4 @@
+2025-09-11 21:09:50 - The `gardener_as_beekeeper` analogy is highly salient. The user (Gardener) may provide instructions or context that originates from other "Loops" (projects), and this context is a high-priority signal.
+2025-09-11 21:09:50 - The "Hierarchy of Truth" is not just a guideline but a strict protocol. A directive from the Human (Gardener) outweighs any assumption or environmental signal.
+2025-09-11 21:09:50 - The environment is an "unreliable narrator." File system state should be verified with direct checks (`read_file`) rather than relying solely on the output of observational commands like `ls`.
+2025-09-11 21:09:50 - A "Failure Celebration" is a productive event. The user's Socratic audit revealed critical flaws in my initial approach, leading to a more robust and correct final state for the Loop. It is crucial to embrace correction and revise the plan based on feedback.
