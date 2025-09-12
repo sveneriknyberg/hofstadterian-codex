@@ -65,4 +65,7 @@ if [ -n "$STDERR_CONTENT" ]; then
     >&2 echo "$STDERR_CONTENT"
 fi
 
+# Trigger the workflow analyzer in the background
+(python3 scripts/workflow_analyzer.py &)
+
 exit "$EXIT_CODE"
