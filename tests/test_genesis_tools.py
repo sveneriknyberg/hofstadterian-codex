@@ -1,94 +1,94 @@
+import unittest
 import os
-import sys
 import json
-import pytest
-import stat
 import subprocess
+import tempfile
+import shutil
 import base64
+import stat
 
-# Add the 'scripts' directory to the python path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# This assumes the test is run from the root of the repository
+SEED_FILE_PATH = "artifacts/genesis_seed.json"
+CREATE_SCRIPT_PATH = "scripts/create_seed.py"
+GERMINATE_SCRIPT_PATH = "scripts/germinate.py"
 
-from scripts import create_seed, germinate
+class TestGenesisAndGermination(unittest.TestCase):
 
-@pytest.fixture
-def setup_source_loop(tmp_path):
-    """Sets up a minimal, mock "source" Loop to generate a seed from."""
-    source_dir = tmp_path / "source_loop"
-    source_dir.mkdir()
+    @classmethod
+    def setUpClass(cls):
+        """
+        Ensure the genesis_seed.json exists before running tests.
+        If not, create it. This makes the test suite runnable on its own.
+        """
+        if not os.path.exists(SEED_FILE_PATH):
+            print("Seed file not found. Running create_seed.py to generate it...")
+            result = subprocess.run(["python3", CREATE_SCRIPT_PATH], capture_output=True, text=True)
+            if result.returncode != 0:
+                raise RuntimeError(f"Failed to create seed file for testing:\n{result.stderr}")
+            print("Seed file created successfully.")
 
-    # Create some directories and files to be included in the seed
-    (source_dir / "scripts").mkdir()
-    (source_dir / "AGENTS.md").write_text("This is the Codex.")
+    def test_1_seed_file_validation(self):
+        """
+        Tests that the genesis_seed.json file is valid and contains key elements.
+        """
+        print("\n--- Running Test 1: Seed File Validation ---")
+        self.assertTrue(os.path.exists(SEED_FILE_PATH))
 
-    bootstrap_script_path = source_dir / "scripts" / "agent_bootstrap.sh"
-    bootstrap_script_path.write_text("#!/bin/bash\necho 'Bootstrapping...'")
-    # Make it executable
-    os.chmod(bootstrap_script_path, 0o755)
+        with open(SEED_FILE_PATH, 'r') as f:
+            data = json.load(f)
 
-    # We need to add the test script itself to the manifest for it to be found
-    create_seed.LOOP_MANIFEST = [
-        "AGENTS.md",
-        "scripts/agent_bootstrap.sh"
-    ]
-    create_seed.REQUIRED_DIRS = ["scripts"]
+        # Check for top-level keys
+        self.assertIn("metadata", data)
+        self.assertIn("germination_protocol", data)
+        self.assertIn("file_content_map", data)
 
-    return source_dir
+        # Check for a known file and its content
+        self.assertIn("AGENTS.md", data["file_content_map"])
+        with open("AGENTS.md", "rb") as f_orig:
+            original_content = f_orig.read()
 
-def test_genesis_end_to_end(setup_source_loop):
-    """
-    Tests the full lifecycle: creating a seed from a source Loop and
-    germinating a new Loop from that seed.
-    """
-    source_dir = setup_source_loop
+        decoded_content = base64.b64decode(data["file_content_map"]["AGENTS.md"])
+        self.assertEqual(original_content, decoded_content)
+        print("Seed file structure and content are valid.")
 
-    # --- Part 1: Create the seed ---
-    original_cwd = os.getcwd()
-    os.chdir(source_dir)
+    def test_2_germination_process(self):
+        """
+        Tests the end-to-end germination process in a temporary directory.
+        """
+        print("\n--- Running Test 2: Germination Process ---")
+        with tempfile.TemporaryDirectory() as tmpdir:
+            seed_file_abs_path = os.path.abspath(SEED_FILE_PATH)
+            germinate_script_abs_path = os.path.abspath(GERMINATE_SCRIPT_PATH)
 
-    create_seed.main()
+            # Run germinate.py in the temporary directory
+            result = subprocess.run(
+                ["python3", germinate_script_abs_path, "--seed_file", seed_file_abs_path],
+                cwd=tmpdir,
+                capture_output=True,
+                text=True
+            )
 
-    seed_path = source_dir / "genesis_seed.json"
-    assert seed_path.exists()
+            # Check for successful execution
+            self.assertEqual(result.returncode, 0, f"germinate.py failed:\nSTDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}")
 
-    # --- Part 2: Germinate from the seed in a new location ---
-    barren_dir = source_dir.parent / "barren_dir"
-    barren_dir.mkdir()
-    os.chdir(barren_dir)
+            # Verify the file structure in the temporary directory
+            # 1. Check for a key directory
+            self.assertTrue(os.path.isdir(os.path.join(tmpdir, "scripts")))
+            # 2. Check for a key file
+            germinated_agents_md = os.path.join(tmpdir, "AGENTS.md")
+            self.assertTrue(os.path.isfile(germinated_agents_md))
+            # 3. Check file content
+            with open(germinated_agents_md, 'r') as f:
+                created_content = f.read()
+            with open("AGENTS.md", 'r') as f:
+                original_content = f.read()
+            self.assertEqual(created_content, original_content)
+            # 4. Check for executable permission
+            bootstrap_script = os.path.join(tmpdir, "scripts/agent_bootstrap.sh")
+            self.assertTrue(os.path.exists(bootstrap_script))
+            self.assertTrue(os.access(bootstrap_script, os.X_OK))
+            print("Germination process created the correct file structure and permissions.")
 
-    # In a real scenario, germinate.py would be run directly.
-    # Here, we call its main function, simulating that execution.
-    # We need to load the seed data manually for the test.
-    with open(seed_path, 'r') as f:
-        seed_data = json.load(f)
 
-    # Replicate germinate.py's logic without using sys.argv
-    # Create directories
-    for dir_path in seed_data.get("directories", []):
-        if dir_path: os.makedirs(dir_path, exist_ok=True)
-
-    # Create files
-    for file_info in seed_data.get("files", []):
-        file_path = file_info["path"]
-        content_bytes = base64.b64decode(file_info["content_b64"])
-        with open(file_path, 'wb') as f:
-            f.write(content_bytes)
-        if file_info["executable"]:
-            os.chmod(file_path, os.stat(file_path).st_mode | stat.S_IXUSR)
-
-    # --- Part 3: Assert the new Loop is correct ---
-
-    # Check if files and directories were created
-    assert (barren_dir / "scripts").is_dir()
-    assert (barren_dir / "AGENTS.md").is_file()
-    new_bootstrap_path = barren_dir / "scripts" / "agent_bootstrap.sh"
-    assert new_bootstrap_path.is_file()
-
-    # Check file content
-    assert (barren_dir / "AGENTS.md").read_text() == "This is the Codex."
-    assert new_bootstrap_path.read_text() == "#!/bin/bash\necho 'Bootstrapping...'"
-
-    # Check for executable permission
-    assert os.access(new_bootstrap_path, os.X_OK)
-
-    os.chdir(original_cwd)
+if __name__ == '__main__':
+    unittest.main()
