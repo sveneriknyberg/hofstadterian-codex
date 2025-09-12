@@ -128,3 +128,57 @@ def test_tool_fixation_uses_default_message_if_no_context(setup_test_environment
 
     # Assert that the specific message is NOT present
     assert "Your test suite ('pytest') appears to be failing." not in captured.out
+
+def test_suggests_proven_workflows_when_available(setup_test_environment, capsys):
+    """
+    Tests if the script correctly loads and displays proven workflows when the file exists.
+    """
+    project_root = setup_test_environment
+    context_dir = project_root / "context"
+    context_dir.mkdir()
+
+    # Create a dummy proven workflows file
+    workflows_data = [
+        {
+            "name": "Fixed the doodad by editing the whatsit",
+            "sequence": [{"tool_name": "overwrite_file_with_block", "tool_args": ["src/doodad.py"]}]
+        }
+    ]
+    (context_dir / "proven_workflows.json").write_text(json.dumps(workflows_data))
+
+    # Use an empty history to avoid triggering other checks
+    (project_root / ".session_history.json").write_text("[]")
+
+    original_cwd = os.getcwd()
+    os.chdir(project_root)
+    try:
+        meta_cognitive_check.main()
+    finally:
+        os.chdir(original_cwd)
+
+    captured = capsys.readouterr()
+
+    assert "--- Proven Workflows ---" in captured.out
+    assert "Fixed the doodad by editing the whatsit" in captured.out
+    assert "overwrite_file_with_block: src/doodad.py" in captured.out
+
+def test_prints_no_workflows_message_when_file_is_missing(setup_test_environment, capsys):
+    """
+    Tests the output when no proven workflows file exists and no other checks are triggered.
+    """
+    project_root = setup_test_environment
+
+    # Use an empty history to avoid triggering other checks
+    (project_root / ".session_history.json").write_text("[]")
+
+    original_cwd = os.getcwd()
+    os.chdir(project_root)
+    try:
+        meta_cognitive_check.main()
+    finally:
+        os.chdir(original_cwd)
+
+    captured = capsys.readouterr()
+
+    assert "--- Proven Workflows ---" not in captured.out
+    assert "No proven workflows to suggest" in captured.out
