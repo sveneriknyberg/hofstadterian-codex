@@ -7,6 +7,7 @@ from datetime import datetime
 CYAN = '\033[0;36m'
 YELLOW = '\033[1;33m'
 GREEN = '\033[0;32m'
+RED = '\033[0;31m'
 NC = '\033[0m'
 
 def get_multiline_input(prompt):
@@ -102,9 +103,29 @@ def main():
             print(f"{YELLOW}Processing warnings/errors:{NC}\n{result.stderr}")
         print(f"{GREEN}Handoff processed successfully.{NC}")
     except subprocess.CalledProcessError as e:
-        print(f"Error: Failed to process handoff file.")
-        print(e.stdout)
-        print(e.stderr)
+        print(f"\n{RED}--- CRITICAL FAILURE IN HANDOFF PROCESSING ---{NC}\n")
+        print(f"{YELLOW}The handoff file was CREATED successfully, but the automatic processing step FAILED.{NC}")
+        print(f"{YELLOW}This is a critical error, as the Loop's memory is now INCONSISTENT.{NC}")
+        print("The system cannot proceed safely until this is resolved.\n")
+
+        print("--- Failure Details ---")
+        print(f"The 'process_handoff.py' script exited with a non-zero status code: {e.returncode}\n")
+
+        if e.stdout:
+            print("--- STDOUT from failed script ---")
+            print(e.stdout)
+
+        if e.stderr:
+            print("--- STDERR from failed script ---")
+            print(e.stderr)
+
+        print("\n--- Recommended Action ---")
+        print("1. Manually run the processing script to debug the issue:")
+        print(f"   python3 {process_script_path} {relative_handoff_path}")
+        print("2. Once you have fixed the issue and the command runs successfully, you can proceed.")
+        print("3. If you cannot fix it, you may need to manually delete the last handoff file and try again:")
+        print(f"   rm {handoff_filepath}")
+
         sys.exit(1)
 
 if __name__ == '__main__':

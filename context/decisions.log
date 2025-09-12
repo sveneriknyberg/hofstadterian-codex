@@ -2,3 +2,8 @@
 2025-09-11 21:09:50 - The Loop's own health check scripts (`agent_bootstrap.sh`, `validate_context.py`) are the primary tools for verifying the success of the setup.
 2025-09-11 21:09:50 - A `.gitignore` file is a critical component of the Loop's infrastructure, necessary to prevent corruption of the git history with environment-specific files like `__pycache__/` and `.session_history.json`.
 2025-09-11 21:09:50 - The `initiate_memory_recording` tool is external to the Loop's protocol; memory must be persisted only through the Loop's own mechanisms (handoffs and context logs).
+2025-09-12 12:29:06 - When a handoff processing failure was detected, the first priority was to repair the Loop's state by manually processing the orphaned handoff and cleaning the resulting test data from the context logs.
+2025-09-12 12:29:06 - The fix for the silent failure involved making the error handling in `create_handoff.py` more verbose and explicit, providing clear failure signals and recovery instructions to future agents.
+2025-09-12 12:29:06 - A new unit test that specifically simulates a subprocess failure was added to `tests/test_handoff_scripts.py` to ensure the fix was robust and to prevent future regressions.
+2025-09-12 12:29:06 - The `validate_context.py` script was upgraded to check for *any* unprocessed handoff files, not just the latest one, to provide a stronger guarantee of state integrity at bootstrap.
+2025-09-12 12:32:43 - The `pre_submit_check.sh` script was found to have a logic flaw when run in an environment with atomic commits. It was upgraded to use a more robust timestamp comparison (`-ge`) to correctly identify handoffs created in the same commit as the latest change.

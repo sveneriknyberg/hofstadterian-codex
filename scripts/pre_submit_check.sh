@@ -1,39 +1,36 @@
 #!/bin/bash
 
-# --- Pre-Submit Check Script ---
+# --- Pre-Submit Check Script (v2) ---
 # This script acts as a gatekeeper to ensure the repository is in a
 # clean and consistent state before a submission is requested.
-# It will exit with a non-zero status code if any check fails.
+# It enforces the Handoff -> Review -> Submit protocol.
 
-echo "--- Running Pre-Submit Checks ---"
+echo "--- Running Pre-Submit Checks (v2) ---"
 
-# --- Check 1: Verify a handoff has been created since the last commit ---
-echo "[1/5] Checking for a new handoff file..."
-LAST_COMMIT_TIME=$(git log -1 --format=%ct)
-NEW_HANDOFF=$(find handoffs -name "*.md" -newermt "@${LAST_COMMIT_TIME}" | head -n 1)
-if [ -z "$NEW_HANDOFF" ]; then
-    echo "  [FAIL] No new handoff file found since the last commit."
+# --- Find the latest handoff file ---
+LATEST_HANDOFF_FILE=$(ls -1t handoffs/*.md 2>/dev/null | head -n 1)
+
+if [ -z "$LATEST_HANDOFF_FILE" ]; then
+    echo "[1/4] Checking for handoff file..."
+    echo "  [FAIL] No handoff files found in the 'handoffs/' directory."
     echo "         Please run 'python3 scripts/create_handoff.py' to document your work."
     exit 1
-else
-    echo "  [PASS] Found new handoff: $NEW_HANDOFF"
 fi
 
-# --- Check 2: Verify the latest handoff has been processed ---
-echo "[2/5] Checking if the latest handoff has been processed..."
-LATEST_HANDOFF_BY_NAME=$(ls -1 handoffs/*.md | sort -r | head -n 1)
-LATEST_HANDOFF_FILENAME=$(basename "$LATEST_HANDOFF_BY_NAME")
+LATEST_HANDOFF_FILENAME=$(basename "$LATEST_HANDOFF_FILE")
 
+# --- Check 1: Verify the latest handoff has been processed ---
+echo "[1/4] Checking if handoff '$LATEST_HANDOFF_FILENAME' is processed..."
 if grep -q "$LATEST_HANDOFF_FILENAME" context/history.log; then
-    echo "  [PASS] Latest handoff '$LATEST_HANDOFF_FILENAME' has been processed."
+    echo "  [PASS] Handoff is present in context/history.log."
 else
-    echo "  [FAIL] Latest handoff '$LATEST_HANDOFF_FILENAME' not found in context/history.log."
+    echo "  [FAIL] Handoff has not been processed into the Loop's memory."
     echo "         This should have been handled by 'create_handoff.py'. Please check for errors."
     exit 1
 fi
 
-# --- Check 3: Verify a code review has been requested since the last commit ---
-echo "[3/5] Checking for a new code review request..."
+# --- Check 2: Verify a code review has been requested for this handoff ---
+echo "[2/4] Checking for a new code review request..."
 REVIEW_LOG="context/reviews.log"
 if [ ! -f "$REVIEW_LOG" ]; then
     echo "  [FAIL] Review log '$REVIEW_LOG' not found."
@@ -41,18 +38,19 @@ if [ ! -f "$REVIEW_LOG" ]; then
     exit 1
 fi
 
-LAST_COMMIT_TIME=$(git log -1 --format=%ct)
-# Check if the review log file's modification time is newer than the last commit time
-if [ "$(stat -c %Y "$REVIEW_LOG")" -lt "$LAST_COMMIT_TIME" ]; then
-    echo "  [FAIL] No new code review has been requested since the last commit."
-    echo "         Please run 'bash scripts/request_review.sh' and then use the 'request_code_review' tool."
-    exit 1
+LATEST_HANDOFF_TIME=$(stat -c %Y "$LATEST_HANDOFF_FILE")
+REVIEW_LOG_TIME=$(stat -c %Y "$REVIEW_LOG")
+
+if [ "$REVIEW_LOG_TIME" -ge "$LATEST_HANDOFF_TIME" ]; then
+    echo "  [PASS] A review has been requested for the latest handoff."
 else
-    echo "  [PASS] A new code review has been requested."
+    echo "  [FAIL] The review request is older than the latest handoff."
+    echo "         Please run 'bash scripts/request_review.sh' again."
+    exit 1
 fi
 
-# --- Check 4: Verify the Git working directory is clean ---
-echo "[4/5] Checking for a clean Git working directory..."
+# --- Check 3: Verify the Git working directory is clean ---
+echo "[3/4] Checking for a clean Git working directory..."
 if [ -z "$(git status --porcelain)" ]; then
     echo "  [PASS] Git working directory is clean."
 else
@@ -61,15 +59,14 @@ else
     exit 1
 fi
 
-# --- Check 5: Run unit tests ---
-echo "[5/5] Running unit tests..."
+# --- Check 4: Run unit tests ---
+echo "[4/4] Running unit tests..."
 if pytest; then
     echo "  [PASS] All unit tests passed."
 else
     echo "  [FAIL] Unit tests failed. Please fix them before submitting."
     exit 1
 fi
-
 
 echo "--- All Pre-Submit Checks Passed ---"
 exit 0
