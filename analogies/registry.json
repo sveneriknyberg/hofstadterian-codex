@@ -14,5 +14,9 @@
   "gardener_as_beekeeper": {
     "rationale": "The Gardener (human user) cultivates multiple, independent Strange Loops, much like a beekeeper tends to several hives. Wisdom, patterns, or directives that seem novel or to lack precedent within this project may be insights (like pollen) transferred from another, more mature Loop. The Gardener's guidance is not limited by this Loop's history alone.",
     "trigger": "When a directive from the Gardener introduces a concept or mechanism that has no direct origin within this project's own handoffs or codebase."
+  },
+  "test_environment_as_hermetic_bubble": {
+    "rationale": "A test runner's environment, especially when invoking a full suite, may be a hermetically sealed bubble, isolated from the parent shell's state and installations. Dependencies must be explicitly provided or installed in a way the test runner can see; installations in the calling shell are not guaranteed to be inherited.",
+    "trigger": "When dependencies appear to be installed correctly but are not found by the test runner."
   }
 }

@@ -6,3 +6,6 @@
 2025-09-12 12:29:06 - A robust test suite should not only test for success cases but also for specific, plausible failure cases.
 2025-09-12 12:29:06 - The Loop's own validation scripts are a critical part of its immune system and should be enhanced as new failure modes are discovered.
 2025-09-12 12:32:43 - The temporal relationship between file modification and git commits is critical. Tooling must account for the possibility of same-timestamp events, especially in an environment with atomic commits.
+2025-09-12 17:25:52 - The execution environment for a full test suite can be different from an interactive shell session. `pip install` in one session does not guarantee availability in another. Using `python3 -m <tool>` is a more robust method for invoking tools like `pytest` to ensure environment consistency.
+2025-09-12 17:25:52 - The Codex is correct: seemingly impossible, repeating errors are a sign of a fundamental misunderstanding of the environment. My repeated attempts to create existing files and fix the `yaml` dependency were signals that I was not addressing the true root cause, which was an environmental inconsistency.
+2025-09-12 17:25:52 - The `create_handoff.py` script is non-interactive in this environment. The correct procedure is to let it create an empty file, then manually overwrite it with the detailed handoff content.
