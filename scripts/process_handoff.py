@@ -5,10 +5,9 @@ from datetime import datetime
 import os
 
 # --- Path Setup ---
-# Determine the absolute path of the directory containing the script
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-# The project root is one level up from the 'scripts' directory
-PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+# The project root is the current working directory.
+# This makes the script location-independent and testable.
+PROJECT_ROOT = os.getcwd()
 
 # Define full paths for all context and log files
 CONTEXT_DIR = os.path.join(PROJECT_ROOT, 'context')

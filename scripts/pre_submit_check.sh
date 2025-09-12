@@ -32,16 +32,24 @@ else
     exit 1
 fi
 
-# --- Check 3: Verify a code review has been requested ---
-echo "[3/5] Checking for a pending code review..."
-# if [ ! -f ".review_requested" ]; then
-#     echo "  [FAIL] No code review has been requested for the current changes."
-#     echo "         Please run 'request_code_review' and address any feedback."
-#     exit 1
-# else
-#     echo "  [PASS] A code review has been requested."
-# fi
-echo "  [INFO] Temporarily bypassing review check due to environmental file creation issues."
+# --- Check 3: Verify a code review has been requested since the last commit ---
+echo "[3/5] Checking for a new code review request..."
+REVIEW_LOG="context/reviews.log"
+if [ ! -f "$REVIEW_LOG" ]; then
+    echo "  [FAIL] Review log '$REVIEW_LOG' not found."
+    echo "         Please run 'bash scripts/request_review.sh' to log your request."
+    exit 1
+fi
+
+LAST_COMMIT_TIME=$(git log -1 --format=%ct)
+# Check if the review log file's modification time is newer than the last commit time
+if [ "$(stat -c %Y "$REVIEW_LOG")" -lt "$LAST_COMMIT_TIME" ]; then
+    echo "  [FAIL] No new code review has been requested since the last commit."
+    echo "         Please run 'bash scripts/request_review.sh' and then use the 'request_code_review' tool."
+    exit 1
+else
+    echo "  [PASS] A new code review has been requested."
+fi
 
 # --- Check 4: Verify the Git working directory is clean ---
 echo "[4/5] Checking for a clean Git working directory..."
@@ -53,10 +61,14 @@ else
     exit 1
 fi
 
-# --- Check 5: Placeholder for future tests ---
-echo "[5/5] Checking for unit tests (placeholder)..."
-# In the future, this section could run a command like `npm test` or `pytest`.
-echo "  [INFO] No unit tests configured to run at this time."
+# --- Check 5: Run unit tests ---
+echo "[5/5] Running unit tests..."
+if pytest; then
+    echo "  [PASS] All unit tests passed."
+else
+    echo "  [FAIL] Unit tests failed. Please fix them before submitting."
+    exit 1
+fi
 
 
 echo "--- All Pre-Submit Checks Passed ---"

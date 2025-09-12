@@ -73,8 +73,8 @@ def main():
 """
 
     # --- Write Handoff File ---
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    project_root = os.path.dirname(script_dir)
+    project_root = os.getcwd() # Use CWD for testability
+    script_dir = os.path.join(project_root, 'scripts')
     handoffs_dir = os.path.join(project_root, 'handoffs')
     os.makedirs(handoffs_dir, exist_ok=True)
     handoff_filepath = os.path.join(handoffs_dir, filename)
