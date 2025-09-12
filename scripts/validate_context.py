@@ -60,26 +60,33 @@ def main():
             print(f"    -> Tip: Run 'chmod +x {os.path.relpath(fpath, project_root)}'")
             all_checks_passed = False
 
-    # --- 3. Check for internal consistency ---
-    print(f"{CYAN}[3/3] Checking for internal consistency...{NC}")
+    # --- 3. Check for unprocessed handoff files ---
+    print(f"{CYAN}[3/3] Checking for unprocessed handoff files...{NC}")
     try:
-        handoff_files = sorted(os.listdir(handoffs_dir), reverse=True)
+        handoff_files = [f for f in os.listdir(handoffs_dir) if f.endswith('.md')]
         if not handoff_files:
-            print_status("No handoffs found, skipping consistency check.", True)
+            print_status("No handoffs found, skipping check.", True)
         else:
-            latest_handoff_filename = handoff_files[0]
             history_log_path = os.path.join(context_dir, 'history.log')
             with open(history_log_path, 'r') as f:
                 history_content = f.read()
 
-            if latest_handoff_filename in history_content:
-                print_status(f"Latest handoff '{latest_handoff_filename}' is processed.", True)
+            unprocessed_handoffs = []
+            for handoff_filename in handoff_files:
+                if handoff_filename not in history_content:
+                    unprocessed_handoffs.append(handoff_filename)
+
+            if not unprocessed_handoffs:
+                print_status("All handoff files have been processed.", True)
             else:
-                print_status(f"Latest handoff '{latest_handoff_filename}' not found in history.log.", False)
-                print(f"    -> Tip: Run 'python scripts/process_handoff.py handoffs/{latest_handoff_filename}'")
+                print_status(f"Found {len(unprocessed_handoffs)} unprocessed handoff file(s).", False)
+                for fname in unprocessed_handoffs:
+                    print(f"    - {fname}")
+                print(f"    -> Tip: Run 'python scripts/process_handoff.py handoffs/<filename>' for each file.")
                 all_checks_passed = False
+
     except FileNotFoundError:
-        print_status("history.log not found, cannot check consistency.", False)
+        print_status("Handoffs directory or history.log not found, cannot check consistency.", False)
         all_checks_passed = False
 
     if not all_checks_passed:
