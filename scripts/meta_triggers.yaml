@@ -4,6 +4,7 @@ patterns:
     description: "The agent appears to be stuck in a loop of observing without acting."
     tools: ["read_file", "ls", "grep"] # Read-only tools
     threshold: 5 # 5 consecutive read-only tools
+    analogy_id: "environment_as_unreliable_narrator"
     message: |
       [!] Finding: You have used {count} read-only tools in a row ({tool_list}).
       - Am I gathering more information than I need?
@@ -13,10 +14,20 @@ patterns:
   - name: "Tool Fixation"
     type: "repetition"
     description: "The agent is repeatedly trying the same tool that has recently failed."
-    # No specific tool list, applies to any tool.
     threshold: 3 # 3 failures of the same tool in the lookback window
-    message: |
+    analogy_id: "tool_rejection_as_environmental_constraint"
+    message: | # Default message
       [!] Finding: The tool '{tool_name}' has failed {count} times recently.
       - Have I fully understood the root cause of this tool's failure?
       - Is there an alternative tool I could use?
-      - Recall the analogy: 'tool_rejection_as_environmental_constraint'. Is the environment preventing this tool from working?
+      - Is the environment preventing this tool from working?
+    contextual_messages:
+      "pytest": |
+        [!] Finding: Your test suite ('pytest') appears to be failing repeatedly.
+        - Have you examined the test output for the specific failing test?
+        - Could a recent change have caused a regression in the code or the test itself?
+      "pip install": |
+        [!] Finding: Dependency installation with 'pip install' appears to be failing repeatedly.
+        - Is the package name spelled correctly in your command or requirements.txt?
+        - Is there a version conflict?
+        - Is there a network issue preventing the download from PyPI?
