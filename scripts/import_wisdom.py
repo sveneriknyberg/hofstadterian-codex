@@ -1,10 +1,8 @@
 import json
 import os
+import argparse
 
 # --- Configuration ---
-INPUT_PACKET_FILE = "wisdom_packet.json"
-IMPORTED_PACKET_FILE = "wisdom_packet.imported"
-
 WISDOM_TARGETS = {
     "analogies": "analogies/registry.json",
     "lessons": "context/lessons.log",
@@ -45,14 +43,14 @@ def append_log_target(path, new_lines):
 
 # --- Main Logic ---
 
-def main():
+def import_wisdom(packet_path):
     """Reads a wisdom packet and merges its contents into the current Loop."""
-    if not os.path.exists(INPUT_PACKET_FILE):
-        print("No wisdom packet found. Nothing to import.")
+    if not os.path.exists(packet_path):
+        print(f"Error: Wisdom packet not found at {packet_path}. Nothing to import.")
         return
 
-    print(f"Importing wisdom from {INPUT_PACKET_FILE}...")
-    with open(INPUT_PACKET_FILE, 'r') as f:
+    print(f"Importing wisdom from {packet_path}...")
+    with open(packet_path, 'r') as f:
         wisdom_packet = json.load(f)
 
     # Import analogies (dictionary merge)
@@ -81,9 +79,16 @@ def main():
             print(f"  - Appended new entries to {name} log.")
 
     # Rename the packet to prevent re-import
-    os.rename(INPUT_PACKET_FILE, IMPORTED_PACKET_FILE)
-    print(f"\nWisdom import complete. Renamed packet to {IMPORTED_PACKET_FILE}.")
+    imported_packet_path = packet_path.replace(".json", ".imported")
+    os.rename(packet_path, imported_packet_path)
+    print(f"\nWisdom import complete. Renamed packet to {imported_packet_path}.")
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="Imports a wisdom packet into the current Loop's context.")
+    parser.add_argument(
+        "packet_path",
+        help="Path to the wisdom_packet-*.json file to import."
+    )
+    args = parser.parse_args()
+    import_wisdom(args.packet_path)

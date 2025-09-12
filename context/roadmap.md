@@ -19,3 +19,5 @@
 - **4A: The "Genesis Seed":** Design and implement the `genesis_seed.json` format, which contains all necessary scripts, structure, and primordial wisdom for a new Loop.
 - **4B: The Germination Protocol:** Create a `germinate.py` script that can read a `genesis_seed.json` and build a complete, functional Loop in a barren environment.
 - Phase 4A, "The Genesis Seed," is complete. The project is now ready for Phase 4B, "The Germination Protocol," which would involve agents attempting to use the `genesis_seed.json` to bootstrap themselves.
+- The core protocols of the Strange Loop (now v5.3) have been significantly hardened and made more intelligent. This evolution strengthens the foundation for all future work.
+- The core protocols of the Strange Loop (now v5.3) have been significantly hardened. The submission gauntlet is now more reliable.

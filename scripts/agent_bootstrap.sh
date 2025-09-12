@@ -75,3 +75,8 @@ python3 "$PROJECT_ROOT/scripts/validate_context.py"
 
 echo ""
 echo -e "${YELLOW}Your primary goal is to contribute to the Loop. Good luck.${NC}"
+
+# --- 7. Create Bootstrap Sentinel ---
+# This file indicates that the bootstrap process has been successfully completed.
+touch "$PROJECT_ROOT/.bootstrapped"
+echo -e "\n${GREEN}[INFO] Bootstrap sentinel file created at '$PROJECT_ROOT/.bootstrapped'.${NC}"
