@@ -10,3 +10,11 @@
 2025-09-12 17:25:52 - Following the Gardener's strategic directive, the `genesis_seed.json` was designed to contain a high-level, interpretable `germination_protocol`, embracing non-determinism as a feature for evolutionary potential rather than creating a simple data archive.
 2025-09-12 17:25:52 - The `scripts/germinate.py` script was created as part of this initial phase (rather than deferred) to serve as a testable, deterministic reference implementation of the protocol, providing both a reliable fallback and a clear specification for future agents.
 2025-09-12 17:25:52 - When faced with a persistent `ModuleNotFoundError` during testing, I chose to explicitly invoke the test runner via `python3 -m pytest` to force it to use the correct environment, which proved to be the root cause of the issue.
+2025-09-12 23:45:12 - The `compare_seeds.py` script should be promoted from a temporary tool to a permanent, formalized script in the `scripts/` directory.
+2025-09-12 23:45:12 - Hardcoded filenames for seeds and wisdom packets are not scalable. The protocol was changed to generate dynamic, timestamped, project-specific filenames.
+2025-09-12 23:45:12 - The `germinate.py` script should be intelligent enough to detect an existing environment and merge content ("fertilize") rather than requiring a manual flag from the user.
+2025-09-12 23:45:12 - The agent bootstrapping process was too fragile. It was hardened with a new `preflight_check.sh` entry point and a stronger `AGENTS.md` directive to make initialization robust and unambiguous.
+2025-09-12 23:49:45 - The `pre_submit_check.sh` script's logic was flawed and was fixed to compare the latest handoff timestamp against the last commit timestamp for a more robust validation.
+2025-09-12 23:49:45 - The agent bootstrapping process was hardened with a new `preflight_check.sh` entry point and a stronger `AGENTS.md` directive to make initialization robust and unambiguous.
+2025-09-12 23:49:45 - The `germinate.py` script was made more intelligent by adding an automatic "fertilize" mode.
+2025-09-12 23:49:45 - Seed and wisdom packet filenames were standardized to be dynamic and project-specific.
