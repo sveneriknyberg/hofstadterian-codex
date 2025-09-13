@@ -31,3 +31,13 @@ patterns:
         - Is the package name spelled correctly in your command or requirements.txt?
         - Is there a version conflict?
         - Is there a network issue preventing the download from PyPI?
+
+  - name: "Dependency Missing in Test"
+    type: "error_content"
+    description: "A test failed because a Python module could not be imported."
+    regex: "(ModuleNotFoundError|ImportError): No module named"
+    analogy_id: "test_environment_as_hermetic_bubble"
+    message: |
+      [!] Finding: A test failed with a module import error: '{matched_text}'.
+      - Did you install the necessary dependencies for the test environment?
+      - Sometimes, tests run in an isolated environment. Check if your test setup requires separate dependency installation.

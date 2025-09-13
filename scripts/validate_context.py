@@ -38,7 +38,7 @@ def main():
         os.path.join(scripts_dir, 'agent_bootstrap.sh'),
         os.path.join(scripts_dir, 'meta_cognitive_check.py'),
         os.path.join(scripts_dir, 'pre_submit_check.sh'),
-        os.path.join(scripts_dir, 'process_handoff.py'),
+        os.path.join(scripts_dir, 'consolidate_handoff.py'),
     ]
 
     for fpath in essential_files:
@@ -82,7 +82,7 @@ def main():
                 print_status(f"Found {len(unprocessed_handoffs)} unprocessed handoff file(s).", False)
                 for fname in unprocessed_handoffs:
                     print(f"    - {fname}")
-                print(f"    -> Tip: Run 'python scripts/process_handoff.py handoffs/<filename>' for each file.")
+                print(f"    -> Tip: Run 'python3 scripts/consolidate_handoff.py' to process handoffs.")
                 all_checks_passed = False
 
     except FileNotFoundError:

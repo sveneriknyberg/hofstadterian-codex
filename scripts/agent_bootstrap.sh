@@ -43,6 +43,25 @@ if [ -z "$LATEST_PACKET" ]; then
   echo -e "  ${CYAN}No previous wisdom packets found. This may be a new Loop instance.${NC}"
 else
   echo -e "  ${CYAN}Most recent wisdom packet: ${GREEN}${LATEST_PACKET}${NC}"
+  PACKET_PATH="$PROJECT_ROOT/artifacts/$LATEST_PACKET"
+
+  # --- Extract and display wisdom from the last session ---
+  if command -v jq >/dev/null && [ -f "$PACKET_PATH" ]; then
+    echo -e "\n  ${YELLOW}--- Wisdom from Last Session ---${NC}"
+
+    # Get the last summary object from the session_summaries array
+    LAST_SUMMARY=$(jq -r '.session_summaries[-1]' "$PACKET_PATH")
+
+    # Extract fields from that object
+    SUMMARY_TEXT=$(echo "$LAST_SUMMARY" | jq -r '.summary_text')
+    echo -e "  ${CYAN}Summary:${NC} ${GREEN}${SUMMARY_TEXT}${NC}"
+
+    echo -e "  ${CYAN}Lessons Learned:${NC}"
+    echo "$LAST_SUMMARY" | jq -r '.lessons_learned[]' | while IFS= read -r lesson; do
+      echo -e "    ${GREEN}- ${lesson}${NC}"
+    done
+    echo -e "  ${YELLOW}----------------------------------${NC}"
+  fi
 fi
 
 if [ ! -f "$ROADMAP_FILE" ]; then

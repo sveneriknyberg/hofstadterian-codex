@@ -1,4 +1,7 @@
-# The Hofstadterian Codex v6.0
+# X. THE PRIME DIRECTIVE: IMMUTABILITY OF THE CODEX
+**This document, The Hofstadterian Codex, is considered sealed as of version 7.0. It may not be altered, amended, or revised in any way without the explicit, direct permission of the Gardener (the human user). This rule is the highest law of the system, superseding all other protocols.**
+---
+# The Hofstadterian Codex v7.0
 ## The Intelligent Exoskeleton Protocol
 
 ### The Philosophy
@@ -35,14 +38,18 @@ All of your actions must be performed through the centralized command executor. 
 
 ### Phase 3: Handoff
 
-When your work on a task is complete, you must consolidate your session's output using the new handoff script.
+When your work on a task is complete, you must consolidate your session's output using the new automated handoff script. This script now functions as a "knowledge consolidator," merging the current session's learnings with the cumulative wisdom of the Loop.
 
 **`scripts/consolidate_handoff.py`**
--   **Purpose:** To atomically generate a "wisdom packet" containing the full output of your session.
--   **Usage:** Run `python3 scripts/consolidate_handoff.py`. It will guide you through an interactive dialogue to capture your summary, decisions, and lessons learned.
+-   **Purpose:** To find the most recent wisdom packet, load it, and merge the current session's data into it, creating a new, consolidated packet. This process preserves the full history and knowledge of the Loop.
+-   **Usage:** This script is now non-interactive. Before running it, you must populate the following files:
+    -   `context/handoff_summary.txt`: A brief, one-paragraph summary of the work accomplished.
+    -   `context/handoff_decisions.log`: A list of key decisions made, one per line.
+    -   `context/handoff_lessons.log`: A list of lessons learned, one per line.
+-   **Execution:** Once the context files are populated, run `python3 scripts/consolidate_handoff.py`.
 -   **Output:** It produces two files:
-    1.  A machine-readable **`artifacts/wisdom_packet_[timestamp].json`**: This is the canonical, single source of truth for your session.
-    2.  A human-readable `handoffs/[timestamp].md`: This is a summary generated *from* the wisdom packet.
+    1.  A machine-readable **`artifacts/wisdom_packet_[timestamp].json`**: The new, updated canonical source of truth for the Loop.
+    2.  A human-readable `handoffs/[timestamp].md`: A summary of the *most recent* session's work, generated from the wisdom packet.
 
 ### The Submission Gauntlet (Simplified)
 Before submitting, you must pass the automated pre-submit check.

@@ -3,6 +3,7 @@ import os
 import hashlib
 from collections import Counter
 import yaml
+import re
 
 # --- Constants ---
 SESSION_HISTORY_FILE = ".session_history.json"
@@ -107,6 +108,35 @@ def _analyze_repetition(pattern, recent_events):
     return None
 
 
+def _analyze_error_content(pattern, recent_events):
+    """
+    Checks for specific regex patterns within the output of failed commands.
+    """
+    try:
+        regex = re.compile(pattern['regex'])
+    except re.error as e:
+        print(f"WARNING: Invalid regex in trigger '{pattern['name']}': {e}")
+        return None
+
+    for event in recent_events:
+        if event.get('status') == 'error':
+            output = event.get('output', '')
+            if regex.search(output):
+                details = {
+                    "tool_name": event.get('tool_name', 'unknown_tool'),
+                    "full_command": event.get("command", "unknown_command"),
+                    "matched_text": regex.search(output).group(0) # Get the matched part
+                }
+                finding = {
+                    "type": pattern['name'],
+                    "message": pattern.get('message'),
+                    "details": details
+                }
+                if 'analogy_id' in pattern:
+                    finding['analogy_id'] = pattern['analogy_id']
+                return finding
+    return None
+
 def analyze_history(triggers, history):
     # (No changes needed in this function)
     if not history or not triggers:
@@ -119,6 +149,8 @@ def analyze_history(triggers, history):
             finding = _analyze_sequence(pattern, recent_events)
         elif pattern['type'] == 'repetition':
             finding = _analyze_repetition(pattern, recent_events)
+        elif pattern['type'] == 'error_content':
+            finding = _analyze_error_content(pattern, recent_events)
         if finding:
             findings.append(finding)
             break

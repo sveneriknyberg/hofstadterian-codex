@@ -12,3 +12,10 @@ __pycache__/
 
 # Bootstrap sentinel file
 .bootstrapped
+
+# Handoff context files
+context/handoff_*.txt
+context/handoff_*.log
+
+# Metacognitive logs
+context/metacog_suggestions.log
