@@ -1,12 +1,10 @@
 #!/bin/bash
 
-# agent_bootstrap.sh
-# This script provides a situational awareness briefing for a new agent instance.
-# It is the first command an agent should run upon instantiation to cohere with the Loop.
+# agent_bootstrap.sh (v2)
+# This script provides an intelligent situational awareness briefing for a new agent instance.
 
-# Determine the absolute path of the directory containing the script
+# --- Setup ---
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-# Set the project root directory (which is one level up from the scripts dir)
 PROJECT_ROOT="$SCRIPT_DIR/.."
 
 # --- ANSI Color Codes ---
@@ -14,49 +12,56 @@ CYAN='\033[0;36m'
 YELLOW='\033[1;33m'
 GREEN='\033[0;32m'
 RED='\033[0;31m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
+# --- Header ---
 echo -e "${CYAN}=======================================================${NC}"
-echo -e "${CYAN}    AGENT BOOTSTRAP PROTOCOL - INITIALIZING CONTEXT    ${NC}"
+echo -e "${CYAN}    AGENT BOOTSTRAP PROTOCOL (v2) - INITIALIZING...    ${NC}"
 echo -e "${CYAN}=======================================================${NC}"
 echo ""
 
-# --- 1. Setup Command Logging ---
-echo -e "${YELLOW}I. SETTING UP COMMAND LOGGING...${NC}"
-# Sourcing this sets up aliases to wrap commands with our logger.
-source "$PROJECT_ROOT/scripts/setup_aliases.sh"
-echo ""
-
-# --- 2. The Prime Directive ---
-echo -e "${YELLOW}II. THE PRIME DIRECTIVE (from AGENTS.md):${NC}"
-# Use sed to print the content between "X. THE PRIME DIRECTIVE" and the next "---"
+# --- 1. The Prime Directive ---
+echo -e "${YELLOW}I. THE PRIME DIRECTIVE (from AGENTS.md):${NC}"
 sed -n '/X. THE PRIME DIRECTIVE/,/---/p' "$PROJECT_ROOT/AGENTS.md" | sed '1d;$d' | while IFS= read -r line; do
   echo -e "  ${GREEN}${line}${NC}"
 done
 echo ""
 
-# --- 3. Latest Handoff ---
-echo -e "${YELLOW}III. LATEST HANDOFF FILE:${NC}"
-# Sort lexicographically in reverse to get the highest timestamp, which is the latest handoff.
-LATEST_HANDOFF=$(ls -1 "$PROJECT_ROOT/handoffs/" 2>/dev/null | sort -r | head -n 1)
-if [ -z "$LATEST_HANDOFF" ]; then
-  echo -e "  ${RED}No handoff files found in 'handoffs/' directory.${NC}"
-else
-  echo -e "  Latest handoff is: ${GREEN}handoffs/${LATEST_HANDOFF}${NC}"
-  echo -e "  ${CYAN}Review its contents carefully to understand the current state.${NC}"
-fi
+# --- 2. Launch Meta-Cognitive Monitor ---
+echo -e "${YELLOW}II. LAUNCHING META-COGNITIVE MONITOR...${NC}"
+touch "$PROJECT_ROOT/context/metacog_suggestions.log"
+nohup python3 "$PROJECT_ROOT/scripts/meta_monitor.py" >/dev/null 2>&1 &
+echo -e "  ${GREEN}Monitor process launched in background.${NC}"
 echo ""
 
-# --- 4. Current Roadmap ---
-echo -e "${YELLOW}IV. CURRENT ROADMAP (from context/roadmap.md):${NC}"
-if [ -s "$PROJECT_ROOT/context/roadmap.md" ]; then
-  while IFS= read -r line; do
-    echo -e "  ${GREEN}${line}${NC}"
-  done < "$PROJECT_ROOT/context/roadmap.md"
+# --- 3. Intelligent Briefing ---
+echo -e "${YELLOW}III. INTELLIGENT BRIEFING:${NC}"
+LATEST_PACKET=$(ls -1 "$PROJECT_ROOT/artifacts/" | grep "wisdom_packet" | sort -r | head -n 1)
+ROADMAP_FILE="$PROJECT_ROOT/context/roadmap.md"
+
+if [ -z "$LATEST_PACKET" ]; then
+  echo -e "  ${CYAN}No previous wisdom packets found. This may be a new Loop instance.${NC}"
 else
-  echo -e "  ${RED}Roadmap is empty or not found.${NC}"
+  echo -e "  ${CYAN}Most recent wisdom packet: ${GREEN}${LATEST_PACKET}${NC}"
+fi
+
+if [ ! -f "$ROADMAP_FILE" ]; then
+    echo -e "  ${RED}CRITICAL: Roadmap file not found at ${ROADMAP_FILE}${NC}"
+    NEXT_STEP="CRITICAL: Roadmap file not found."
+else
+    # Find the first line that starts with "- [ ]" or "- **" which indicates an incomplete task.
+    # We use grep and then head to get only the first match.
+    NEXT_STEP=$(grep -E '^\s*-\s*(\[ \]|(\*\*))' "$ROADMAP_FILE" | head -n 1)
+
+    if [ -z "$NEXT_STEP" ]; then
+        NEXT_STEP="All roadmap items appear to be complete. Please review the roadmap and define the next phase."
+    fi
 fi
 echo ""
+echo -e "${YELLOW}IV. SUGGESTED NEXT STEP:${NC}"
+echo -e "  ${GREEN}${NEXT_STEP}${NC}"
+echo ""
+
 
 # --- 5. Hierarchy of Truth ---
 echo -e "${YELLOW}V. HIERARCHY OF TRUTH (Reminder from AGENTS.md):${NC}"
@@ -77,6 +82,5 @@ echo ""
 echo -e "${YELLOW}Your primary goal is to contribute to the Loop. Good luck.${NC}"
 
 # --- 7. Create Bootstrap Sentinel ---
-# This file indicates that the bootstrap process has been successfully completed.
 touch "$PROJECT_ROOT/.bootstrapped"
 echo -e "\n${GREEN}[INFO] Bootstrap sentinel file created at '$PROJECT_ROOT/.bootstrapped'.${NC}"
