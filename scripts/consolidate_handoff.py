@@ -1,6 +1,7 @@
 import json
 import os
 import glob
+import subprocess
 from datetime import datetime
 
 # --- Configuration ---
@@ -86,7 +87,23 @@ def main():
     analogies_registry = load_json(ANALOGIES_REGISTRY_FILE) or {}
     session_history = load_json(SESSION_HISTORY_FILE) or []
 
-    # 5. Merge new data into the wisdom packet
+    # 5. Run the workflow analyzer to process the session history
+    print("\n--- Running Workflow Analyzer ---")
+    try:
+        # We assume workflow_analyzer.py is idempotent and handles its own state
+        subprocess.run(["python3", "scripts/workflow_analyzer.py"], check=True, capture_output=True, text=True)
+        print("Workflow analysis complete.")
+    except (subprocess.CalledProcessError, FileNotFoundError) as e:
+        print(f"Warning: Workflow analyzer script failed to run or was not found. Error: {e}")
+        if hasattr(e, 'stderr'):
+            print(f"Analyzer stderr: {e.stderr}")
+
+    # 6. Load the updated proven workflows
+    proven_workflows_file = os.path.join(CONTEXT_DIR, "proven_workflows.json")
+    proven_workflows = load_json(proven_workflows_file) or []
+
+
+    # 7. Merge new data into the wisdom packet
     timestamp = datetime.now().isoformat()
 
     # Append the new summary
@@ -99,6 +116,9 @@ def main():
 
     # Merge analogies
     wisdom_packet["analogies"].update(analogies_registry)
+
+    # Overwrite with the latest set of proven workflows
+    wisdom_packet["proven_workflows"] = proven_workflows
 
     # Append session history
     wisdom_packet["session_history"].extend(session_history)

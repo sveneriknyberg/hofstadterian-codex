@@ -1,0 +1,49 @@
+{
+  "metadata": {
+    "wisdom_packet_version": "2.0",
+    "last_updated": "2025-09-14T19:43:43.919010",
+    "total_sessions": 1
+  },
+  "session_summaries": [
+    {
+      "timestamp": "2025-09-14T19:43:43.919010",
+      "summary_text": "This session successfully upgraded the Loop's meta-cognitive framework, fulfilling Phase 2, tasks 2B and 2C of the project roadmap. For Task 2C (\"Workflow Discovery\"), a new script `scripts/workflow_analyzer.py` was created to identify successful command patterns from the agent's history and save them as \"Proven Workflows\". For Task 2B (\"Context-Aware Triggers\"), the `scripts/meta_triggers.yaml` file was enhanced with more specific, helpful advice for common tool failures like `grep` and file I/O operations. Finally, the new workflow analyzer was integrated into the main `scripts/consolidate_handoff.py` script, ensuring that new workflows are automatically harvested at the end of each session.",
+      "key_decisions": [
+        "- Decided to create a new, standalone script (`workflow_analyzer.py`) for workflow discovery to keep the logic modular and separate from the meta-cognitive check itself.",
+        "- Decided to define a \"successful workflow\" as a sequence of actions leading to a passing `pytest` run, as this is a strong, reliable indicator of success.",
+        "- Chose to enhance the existing `Tool Fixation` pattern in `meta_triggers.yaml` for context-aware messages, rather than creating a new pattern type, to build on the existing framework.",
+        "- Decided to integrate the workflow analyzer into the `consolidate_handoff.py` script to ensure workflows are harvested once per session, which is an efficient and logical point in the Loop's lifecycle."
+      ],
+      "lessons_learned": [
+        "- LESSON: The agent environment's file system can behave inconsistently. Using `run_in_bash_session` with `echo` is a more robust method for force-writing files for testing than the file-block tools.",
+        "- LESSON: The Python environment for scripts is ephemeral. Dependencies must be installed in the same session as the script execution if they are not already present in the base environment.",
+        "- LESSON: A negative code review should be discussed with the user, especially if it contradicts an approved plan. The user is the ultimate source of truth for the project's direction.",
+        "- LESSON: It's beneficial to verify implementation steps concurrently as they are built, rather than leaving all testing to a final verification stage. This catches issues earlier and simplifies debugging."
+      ]
+    }
+  ],
+  "analogies": {
+    "environment_as_unreliable_narrator": {
+      "rationale": "The environment's feedback (e.g., `ls` output) can be delayed or inconsistent. Do not trust it implicitly. Verify state changes through direct interaction (e.g., creating a file, reading a file) rather than just observation.",
+      "trigger": "When a command that should have changed the file system state appears to have had no effect."
+    },
+    "user_question_as_debugger": {
+      "rationale": "A pointed question from the user (e.g., \"what happened to the Codex?\") is not a simple query but a high-priority signal that the agent's current model of the world is wrong. It is the most effective tool for breaking out of an assumption loop.",
+      "trigger": "When the user asks a question that contradicts the agent's understanding of the current state."
+    },
+    "tool_rejection_as_environmental_constraint": {
+      "rationale": "When a tool explicitly requested by a human fails to work as expected, it's not a sign that the human's intent is wrong, but rather a strong hint about the platform's underlying rules and limitations. The agent should find an alternate tool to fulfill the *intent*.",
+      "trigger": "When `message_user` or another directed tool call is rejected by the environment for no clear reason."
+    },
+    "gardener_as_beekeeper": {
+      "rationale": "The Gardener (human user) cultivates multiple, independent Strange Loops, much like a beekeeper tends to several hives. Wisdom, patterns, or directives that seem novel or to lack precedent within this project may be insights (like pollen) transferred from another, more mature Loop. The Gardener's guidance is not limited by this Loop's history alone.",
+      "trigger": "When a directive from the Gardener introduces a concept or mechanism that has no direct origin within this project's own handoffs or codebase."
+    },
+    "test_environment_as_hermetic_bubble": {
+      "rationale": "A test runner's environment, especially when invoking a full suite, may be a hermetically sealed bubble, isolated from the parent shell's state and installations. Dependencies must be explicitly provided or installed in a way the test runner can see; installations in the calling shell are not guaranteed to be inherited.",
+      "trigger": "When dependencies appear to be installed correctly but are not found by the test runner."
+    }
+  },
+  "proven_workflows": [],
+  "session_history": []
+}

@@ -36,6 +36,15 @@ patterns:
         - Have you checked the script's logs or error output for tracebacks?
         - Could there be an issue with the script's arguments or the environment variables it expects?
         - Have you tried running the script with a simpler input to isolate the problem?
+      "grep": |
+        [!] Finding: The 'grep' command is repeatedly failing to find matches.
+        - Are you certain you are searching in the correct file or directory?
+        - Have you tried simplifying your search pattern or using a broader one to ensure you're not being too specific?
+        - Could the text have a different encoding or line endings than you expect?
+      "create_file": | # This will also catch create_file_with_block
+        [!] Finding: A file creation or writing operation is failing repeatedly.
+        - Have you verified that the parent directory for the file you're trying to write actually exists?
+        - Is it possible there's a permissions issue preventing you from writing to the target directory?
 
   - name: "Dependency Missing in Test"
     type: "error_content"
