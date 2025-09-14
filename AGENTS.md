@@ -1,3 +1,4 @@
+<!-- protocol_version: 10.0 -->
 # AGENTS.md
 # Hofstadterian Codex v10.0: Agent Protocol
 
