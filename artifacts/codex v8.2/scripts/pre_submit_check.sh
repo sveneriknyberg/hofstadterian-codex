@@ -1,7 +1,10 @@
 # scripts/pre_submit_check.sh
 
 #!/bin/bash
-# Orchestrates an interactive submission process.
+
+# pre_submit_check.sh v2.0
+# Orchestrates an interactive submission process including a mandatory code review
+# and explicit user approval before final submission.
 
 # --- Configuration ---
 ARTIFACTS_DIR="artifacts"
@@ -13,12 +16,15 @@ echo "--- Initiating Submission Gauntlet ---"
 # === STAGE 1: Artifact Verification ===
 echo "Verifying handoff artifacts..."
 latest_packet=$(find "$ARTIFACTS_DIR" -name "${WISDOM_PACKET_PREFIX}*.json" -mmin -10 -print -quit)
+
 if [ -z "$latest_packet" ]; then
     echo "❌ FAILURE: No recent Wisdom Packet found."
+    echo "          Run 'python3 scripts/consolidate_handoff.py' before proceeding."
     exit 1
 fi
 
 latest_handoff=$(find "$HANDOFFS_DIR" -name "*.md" -mmin -10 -print -quit)
+
 if [ -z "$latest_handoff" ]; then
     echo "❌ FAILURE: No recent human-readable handoff found."
     exit 1
@@ -29,12 +35,13 @@ echo "✅ Artifacts verified."
 echo
 echo "--- AGENT ACTION REQUIRED: Code Review ---"
 echo "✅ You must now run request_code_review()."
-echo "Analyze and address any actionable feedback."
+echo "Analyze the feedback. Address any actionable and reasonable issues that do not"
+echo "contradict the Gardener's explicit directives."
 
 # === STAGE 3: Awaiting Gardener Approval ===
 echo
 echo "--- WAITING FOR HUMAN REVIEW ---"
-read -p "GARDENER (Human): Press ENTER to approve submission..."
+read -p "GARDENER (Human): Once you have reviewed the code and are satisfied, press ENTER to approve submission..."
 
 # === STAGE 4: Final Submission Clearance ===
 echo
