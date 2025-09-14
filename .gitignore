@@ -19,3 +19,6 @@ context/handoff_*.log
 
 # Metacognitive logs
 context/metacog_suggestions.log
+
+# Session output artifacts from execute_tool.py
+.session_outputs/
