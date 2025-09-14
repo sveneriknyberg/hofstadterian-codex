@@ -18,5 +18,9 @@
   "test_environment_as_hermetic_bubble": {
     "rationale": "A test runner's environment, especially when invoking a full suite, may be a hermetically sealed bubble, isolated from the parent shell's state and installations. Dependencies must be explicitly provided or installed in a way the test runner can see; installations in the calling shell are not guaranteed to be inherited.",
     "trigger": "When dependencies appear to be installed correctly but are not found by the test runner."
+  },
+  "HERACLITUS_STREAM": {
+    "rationale": "You cannot step in the same river twice. The state of the codebase or environment may have changed since you last observed it. Re-verify assumptions before acting.",
+    "trigger": "When an action fails unexpectedly after a period of observation or analysis."
   }
 }

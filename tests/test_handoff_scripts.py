@@ -58,8 +58,8 @@ def test_consolidate_handoff_end_to_end(setup_clean_env):
     with open(packet_path, 'r') as f:
         packet_data = json.load(f)
 
-    # 2. Verify the contents of the wisdom packet (new v2.0 structure)
-    assert packet_data["metadata"]["wisdom_packet_version"] == "2.0"
+    # 2. Verify the contents of the wisdom packet (new v2.1 structure)
+    assert packet_data["metadata"]["wisdom_packet_version"] == "2.1"
 
     # The new script creates a list of session summaries
     assert len(packet_data["session_summaries"]) == 1
