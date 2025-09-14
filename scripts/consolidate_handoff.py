@@ -143,6 +143,17 @@ def main():
     except Exception as e:
         print(f"Warning: Could not generate markdown handoff file. Error: {e}")
 
+    # 8. Log this handoff as processed
+    try:
+        history_log_path = os.path.join(CONTEXT_DIR, 'history.log')
+        log_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        log_message = f"{log_timestamp} - Successfully processed handoff 'handoffs/{handoff_filename}'.\n"
+        with open(history_log_path, 'a') as f:
+            f.write(log_message)
+        print(f"Successfully logged processing of {handoff_filename}")
+    except Exception as e:
+        print(f"Warning: Could not write to history log. Error: {e}")
+
     print("\n--- Automated Handoff Consolidation Complete ---")
 
 

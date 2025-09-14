@@ -31,6 +31,11 @@ patterns:
         - Is the package name spelled correctly in your command or requirements.txt?
         - Is there a version conflict?
         - Is there a network issue preventing the download from PyPI?
+      "python3": |
+        [!] Finding: A python script invoked with 'python3' appears to be failing repeatedly.
+        - Have you checked the script's logs or error output for tracebacks?
+        - Could there be an issue with the script's arguments or the environment variables it expects?
+        - Have you tried running the script with a simpler input to isolate the problem?
 
   - name: "Dependency Missing in Test"
     type: "error_content"
