@@ -1,0 +1,11 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Session history
+.session_actions.json
+
+# Sentinel File
+.preflight_failed
