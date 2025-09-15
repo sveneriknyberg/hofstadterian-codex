@@ -1,7 +1,5 @@
-# preflight_check.sh
-
 #!/bin/bash
-# v5.0: Adds Git repository integrity check.
+# v5.2: Corrected version parsing to read from H1 title in AGENTS.md.
 
 # --- Configuration ---
 EXPECTED_PROTOCOL_VERSION="12.0"
@@ -17,7 +15,7 @@ REQUIRED_SCRIPTS=(
 SESSION_LOG_FILE=".session_actions.json"
 FAIL_FLAG=0
 
-echo "--- Running Pre-Flight System Check v5.0 ---"
+echo "--- Running Pre-Flight System Check v5.2 ---"
 
 # --- 1. Verify Git Repository Integrity ---
 echo
@@ -38,7 +36,8 @@ if [ ! -f "AGENTS.md" ]; then
     echo "❌ FAILURE: AGENTS.md not found."
     FAIL_FLAG=1
 else
-    read_version=$(grep -oP '(?<=protocol_version: )[0-9.]+' AGENTS.md)
+    # CORRECTED: Parse the H1 title for "vX.X" instead of a non-existent key-value pair.
+    read_version=$(sed -n 's/^# Hofstadterian Codex v\([0-9.]\+\):.*/\1/p' AGENTS.md)
     if [ "$read_version" == "$EXPECTED_PROTOCOL_VERSION" ]; then
         echo "✅ Protocol version is correct ($EXPECTED_PROTOCOL_VERSION)."
     else
@@ -107,7 +106,8 @@ else
     else
         expected_sha=$(grep -oP '(?<=SHA256: `)[a-f0-9]+' "$latest_handoff")
         actual_sha=$(sha256sum "$wisdom_packet" | awk '{print $1}')
-        if [ "$expected_sha" == "$actual_sha" ]; then
+        if [ "$expected_sha" == "$actual_sha" ];
+            then
             echo "✅ Last handoff integrity verified for '$wisdom_packet'."
         else
             echo "❌ FAILURE: Checksum mismatch for '$wisdom_packet'. The artifact may be corrupt."
@@ -122,5 +122,6 @@ if [ $FAIL_FLAG -eq 1 ]; then
     echo "❌ PRE-FLIGHT CHECK FAILED."
     exit 1
 else
+    echo "✅ PRE-FLIGHT CHECK PASSED. System is ready for new session."
     exit 0
 fi
