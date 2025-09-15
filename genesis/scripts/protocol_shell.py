@@ -14,9 +14,9 @@ def is_state_changing(command_list):
     """
     if not command_list:
         return False
-    
+
     first_word = command_list[0]
-    
+
     # Allow 'bash' only if it's running the safe pre_submit_check.sh
     if first_word == 'bash' and len(command_list) > 1 and 'pre_submit_check.sh' in command_list[1]:
         return False
@@ -24,14 +24,14 @@ def is_state_changing(command_list):
     # Allow 'python3' only if it's running the intent_executor.py script
     if first_word == 'python3' and len(command_list) > 1 and 'intent_executor.py' in command_list[1]:
         return False
-        
+
     return first_word not in READ_ONLY_COMMANDS
 
 def main():
     parser = argparse.ArgumentParser(description="A protocol-enforcing shell for the agent.")
     parser.add_argument('command', nargs=argparse.REMAINDER, help="The command to execute.")
     args = parser.parse_args()
-    
+
     full_command_list = args.command
 
     # CORRECTED: Use shlex.join to safely reconstruct the command string with proper quoting.

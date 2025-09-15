@@ -1,5 +1,4 @@
-# AGENTS.md
-# Hofstadterian Codex v12.0: Agent Protocol
+# Agent Protocol v1.0
 
 Your work is governed by two sets of rules: how you execute individual commands, and the sequence you must follow to end a session.
 
