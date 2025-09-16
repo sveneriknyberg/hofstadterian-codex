@@ -1,0 +1,25 @@
+# config/meta_triggers.yaml
+patterns:
+  - name: "Analysis Paralysis"
+    type: "sequence"
+    description: "The agent appears to be stuck in a loop of observing without acting."
+    tools: ["ls", "cat", "grep", "find", "head", "tail", "git"]
+    threshold: 5
+    message: |
+      [!] Meta-Cognitive Alert: Analysis Paralysis Detected.
+      You have used {count} consecutive read-only commands.
+      Consider:
+      - Do I have enough information to form a hypothesis and take a small, concrete action?
+      - What is the smallest possible change I can make to test my understanding?
+
+  - name: "Tool Fixation"
+    type: "repetition"
+    description: "The agent is repeatedly trying the same tool that has recently failed."
+    threshold: 3
+    message: |
+      [!] Meta-Cognitive Alert: Tool Fixation Detected.
+      The command '{tool_name}' has failed {count} times recently.
+      Consider:
+      - Have I fully understood the root cause of this tool's failure?
+      - Is there an alternative tool or approach I could use?
+      - Is an environmental constraint causing this tool to fail?

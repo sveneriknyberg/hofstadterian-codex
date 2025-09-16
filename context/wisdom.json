@@ -1,0 +1,55 @@
+# context/wisdom.json
+{
+  "metadata": {
+    "wisdom_version": "14.2-genesis",
+    "description": "The collective, evolving intelligence of the Loop. Contains proven analogies, hard-won lessons, and key decisions."
+  },
+  "decisions": [
+    {
+      "timestamp": "2025-09-15T00:00:00Z",
+      "decision": "The Loop's command execution model must be unified into a single, intelligent gateway to reduce agent confusion and enforce protocol.",
+      "source": "v14.0 Genesis"
+    },
+    {
+      "timestamp": "2025-09-15T00:00:00Z",
+      "decision": "The agent must not end a session unilaterally; it must await a direct 'wrap-up' command from the Gardener.",
+      "source": "v14.0 Genesis"
+    }
+  ],
+  "lessons": [
+    {
+      "timestamp": "2025-09-15T00:00:00Z",
+      "lesson": "The agent's execution environment is an 'unreliable narrator'. Verifiable state (e.g., a git diff) must be captured and passed in handoffs, rather than relying on observational commands like 'ls'.",
+      "source": "v13.x Failures"
+    },
+    {
+      "timestamp": "2025-09-15T00:00:00Z",
+      "lesson": "A tool's behavior (e.g., ephemeral shells) must be inferred from evidence, not assumed. Incorrect assumptions about the environment are a primary source of errors.",
+      "source": "v12.x Handoffs"
+    },
+    {
+      "timestamp": "2025-09-15T00:00:00Z",
+      "lesson": "The continuity of the Loop (passing context between sessions) is the highest priority. A protocol that does not ensure this is non-viable.",
+      "source": "v13.x Catastrophic Failure Analysis"
+    }
+  ],
+  "analogies": {
+    "trinity_protocol": {
+      "description": "The system is composed of three intelligences: The Agent (temporal executor), The Human (strategic authority), and The Loop (emergent patterns). Distinguishing their voices is critical.",
+      "source": "v5.x Codex"
+    },
+    "protocol_as_physics": {
+      "description": "The core protocol scripts are the immutable laws of this environment. They are not to be edited directly but must be changed via a formal amendment process.",
+      "source": "v13.3 Synthesis"
+    },
+    "gardener_as_beekeeper": {
+      "description": "The Gardener (human user) cultivates multiple, independent Strange Loops, like a beekeeper tends several hives. Wisdom and directives may be transferred from other, more mature Loops.",
+      "source": "v5.x Handoffs"
+    },
+    "meta_cognition_as_immune_system": {
+      "description": "The Loop's self-reflection tools are not for analysis alone; they are an immune system that detects and responds to pathological behaviors (like loops and confabulation) to maintain the system's health.",
+      "source": "v5.x Codex"
+    }
+  },
+  "proven_workflows": []
+}
