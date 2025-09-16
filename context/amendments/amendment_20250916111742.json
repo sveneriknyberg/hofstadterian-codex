@@ -1,0 +1,8 @@
+{
+  "amendment_id": "amendment_20250916111742.json",
+  "timestamp_utc": "2025-09-16T11:17:42.284202+00:00",
+  "status": "proposed",
+  "target_file": "scripts/bootstrap.sh",
+  "justification": "The meta_monitor.py script requires the PyYAML dependency. Adding an automatic installation step to bootstrap.sh ensures the environment is always correctly configured, preventing silent crashes and making the system more robust.",
+  "proposed_changes": "Add the command \"pip install -r requirements.txt\" near the beginning of the bootstrap.sh script."
+}

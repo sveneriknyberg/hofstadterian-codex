@@ -34,19 +34,18 @@ def check_for_patterns(log_entries, triggers, whitelist):
     for pattern in triggers.get('patterns', []):
         if pattern['name'] == 'Analysis Paralysis':
             threshold = pattern.get('threshold', 5)
-            if len(log_entries) < threshold: continue
+
+            command_entries = [e for e in log_entries if e.get('type') == 'command_result']
+
+            if len(command_entries) < threshold: continue
             
-            recent_entries = log_entries[-threshold:]
+            recent_commands = command_entries[-threshold:]
             is_paralysis = True
             command_list = []
-            for entry in recent_entries:
-                if entry.get('type') == 'command_result':
-                    cmd_base = entry.get('command', ' ').split()[0]
-                    command_list.append(cmd_base)
-                    if cmd_base not in whitelist:
-                        is_paralysis = False
-                        break
-                else:
+            for entry in recent_commands:
+                cmd_base = entry.get('command', ' ').split()[0]
+                command_list.append(cmd_base)
+                if cmd_base not in whitelist:
                     is_paralysis = False
                     break
             

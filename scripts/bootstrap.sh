@@ -27,6 +27,7 @@ echo -e "${CYAN}=======================================================${NC}"
 echo ""
 
 # --- 1. Log Management & Template Restoration ---
+pip install -r requirements.txt --quiet
 cd "$PROJECT_ROOT"
 if [ -f "$SESSION_LOG" ]; then
     mv -f "$SESSION_LOG" "$OLD_LOG"

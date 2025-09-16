@@ -1,4 +1,3 @@
-# context/wisdom.json
 {
   "metadata": {
     "wisdom_version": "14.2-genesis",
@@ -14,6 +13,26 @@
       "timestamp": "2025-09-15T00:00:00Z",
       "decision": "The agent must not end a session unilaterally; it must await a direct 'wrap-up' command from the Gardener.",
       "source": "v14.0 Genesis"
+    },
+    {
+      "timestamp": "2025-09-16T11:56:50.859037+00:00",
+      "decision": "Decided to investigate a minor `jq` parsing error, which led to the discovery of deeper system issues.",
+      "source": "session_handoff"
+    },
+    {
+      "timestamp": "2025-09-16T11:56:50.859037+00:00",
+      "decision": "Decided to implement a standard `requirements.txt` file to formally manage project dependencies instead of performing a one-off installation.",
+      "source": "session_handoff"
+    },
+    {
+      "timestamp": "2025-09-16T11:56:50.859037+00:00",
+      "decision": "Decided to amend the `bootstrap.sh` protocol script to automatically install dependencies, making the antire system more robust and self-contained for future sessions.",
+      "source": "session_handoff"
+    },
+    {
+      "timestamp": "2025-09-16T11:56:50.859037+00:00",
+      "decision": "Decided to correct a latent logic flaw in the `meta_monitor.py` script's 'Analysis Paralysis' check, which was discovered during the debugging process.",
+      "source": "session_handoff"
     }
   ],
   "lessons": [
@@ -31,6 +50,31 @@
       "timestamp": "2025-09-15T00:00:00Z",
       "lesson": "The continuity of the Loop (passing context between sessions) is the highest priority. A protocol that does not ensure this is non-viable.",
       "source": "v13.x Catastrophic Failure Analysis"
+    },
+    {
+      "timestamp": "2025-09-16T11:56:50.859037+00:00",
+      "lesson": "Silent error handling (e.g., `>/dev/null 2>&1`) is a major risk, as it can completely hide critical startup failures. Process launch must be explicitly verified (e.g., with `ps`).",
+      "source": "session_handoff"
+    },
+    {
+      "timestamp": "2025-09-16T11:56:50.859037+00:00",
+      "lesson": "The `run.py` gateway is the single source of truth for the session log. Any action that modifies the system state (including creating or editing files) *must* be routed through it. Bypassing it creates an incomplete and untruthful record.",
+      "source": "session_handoff"
+    },
+    {
+      "timestamp": "2025-09-16T11:56:50.859037+00:00",
+      "lesson": "Core protocol scripts are immutable and can only be changed via the formal amendment process (`propose_amendment.py`), as per the Godelian Mandate.",
+      "source": "session_handoff"
+    },
+    {
+      "timestamp": "2025-09-16T11:56:50.859037+00:00",
+      "lesson": "Authorization is granular. Approval for a multi-step plan does not grant implicit approval to execute all steps; explicit approaval must be sought after each step is completed.",
+      "source": "session_handoff"
+    },
+    {
+      "timestamp": "2025-09-16T11:56:50.859037+00:00",
+      "lesson": "Shell command substitution with backtick (``) is powerful but dangerous; it can capture unexpected output and corrupt command arguments. Safer quoting is essential.",
+      "source": "session_handoff"
     }
   ],
   "analogies": {

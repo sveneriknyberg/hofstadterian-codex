@@ -1,4 +1,3 @@
-# config/read_only_commands.json
 [
     "ls",
     "cat",
