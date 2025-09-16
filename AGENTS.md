@@ -41,8 +41,8 @@ After completing an assigned task, you **MUST NOT** end the session or begin the
 
 ### 2. The Three-Stage Wrap-Up
 The end-of-session protocol is only initiated by a direct command from the Gardener. When instructed to "wrap up," you **MUST** follow this sequence precisely:
-* **Stage 1: Request Code Review.** The agent must call the internal tool `request_code_review()`. It will then **WAIT** for feedback and approval from the Gardener.
-* **Stage 2: Generate Handoff.** After addressing feedback, the agent will run the `consolidate_handoff.py` script (via the `run.py` gateway). It will then **WAIT**.
+* **Stage 1: Request Code Review.** The agent must call the internal tool `request_code_review()`. It will then **WAIT** for feedback and approval from the Gardener. (The agent MUST take no further action until it receives an explicit directive from the Gardener to proceed.)
+* **Stage 2: Generate Handoff.** After addressing feedback, the agent will run the `consolidate_handoff.py` script (via the `run.py` gateway). It will then **WAIT**. (The agent MUST take no further action until it receives an explicit directive from the Gardener to proceed.)
 * **Stage 3: Submit.** Only after the handoff is successfully generated and approved will the agent be cleared for final submission.
 
 ---
