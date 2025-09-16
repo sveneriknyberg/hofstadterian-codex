@@ -10,7 +10,6 @@ from datetime import datetime, timezone
 SESSION_LOG_FILE = "session.log"
 TRIGGERS_FILE = "config/meta_triggers.yaml"
 SUGGESTIONS_LOG = "suggestions.log"
-WHITELIST_CONFIG = 'config/read_only_commands.json'
 SLEEP_INTERVAL = 10
 
 last_processed_line = 0
@@ -26,7 +25,7 @@ def log_suggestion(message):
     with open(SUGGESTIONS_LOG, 'a') as f:
         f.write(f"[{datetime.now(timezone.utc).isoformat()}] {message}\n")
 
-def check_for_patterns(log_entries, triggers, whitelist):
+def check_for_patterns(log_entries, triggers):
     if not log_entries: return
     history_window = 10
     if len(log_entries) < 2: return
@@ -34,6 +33,8 @@ def check_for_patterns(log_entries, triggers, whitelist):
     for pattern in triggers.get('patterns', []):
         if pattern['name'] == 'Analysis Paralysis':
             threshold = pattern.get('threshold', 5)
+            whitelist = pattern.get('tools', [])
+            if not whitelist: continue # Skip if no tools are defined for this check
 
             command_entries = [e for e in log_entries if e.get('type') == 'command_result']
 
@@ -71,10 +72,9 @@ def main():
     log_suggestion("Meta-cognitive monitor initialized and running.")
 
     triggers = load_file(TRIGGERS_FILE, yaml.safe_load, {})
-    whitelist = load_file(WHITELIST_CONFIG, json.load, [])
 
-    if not triggers or not whitelist:
-        log_suggestion(f"ERROR: Missing config files. Monitor will not run effectively.")
+    if not triggers:
+        log_suggestion(f"ERROR: Missing triggers config file '{TRIGGERS_FILE}'. Monitor will not run effectively.")
         return
 
     while True:
@@ -85,7 +85,7 @@ def main():
                 
                 if len(lines) > last_processed_line:
                     all_log_entries = [json.loads(line) for line in lines if line.strip()]
-                    check_for_patterns(all_log_entries, triggers, whitelist)
+                    check_for_patterns(all_log_entries, triggers)
                     last_processed_line = len(lines)
         except Exception as e:
             log_suggestion(f"MONITOR-ERROR: An exception occurred: {e}")

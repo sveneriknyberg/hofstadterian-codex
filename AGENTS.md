@@ -23,16 +23,39 @@ There is only one valid way to begin a session. It is not optional.
 
 All agent actions are performed through a single, unified command gateway to eliminate ambiguity and enforce logging.
 
-**`scripts/run.py` (The Gateway)**
+### 1. `scripts/run.py` (The Gateway)
 * **Purpose**: This script is the **sole entry point for every command** you execute.
 * **Usage**: All actions **MUST** be wrapped in this single, consistent format:
     ```bash
     python3 scripts/run.py --intent "My clear intent for this action." --command "The shell command to be executed."
     ```
 
+### 2. The "Cat for Review" Rule
+Due to limitations in the environment's file monitoring UI, a strict visibility protocol is required. Whenever you create or modify a file that requires Gardener review (e.g., an amendment proposal, a source code change), your next immediate action **MUST** be to `cat` the full contents of that file into the chat. This ensures the Gardener has the necessary information to perform their review.
+
 ---
 
-## III. Session Lifecycle & The Gardener's Command
+## III. The Citadel and the City Protocol
+
+To balance protocol-enforced logging with development efficiency, operations are divided into two tiers, each with distinct rules.
+
+### 1. The Citadel (The Meta-Project)
+The Citadel consists of the cognitive framework of the agent itself. Any file within the following directories is considered part of the Citadel:
+- `AGENTS.md`
+- `scripts/`
+- `context/`
+- `config/`
+
+When operating within the Citadel, you are modifying the core protocol. All actions that create, modify, or delete files within the Citadel **MUST** use the `scripts/run.py` gateway. This ensures a meticulous and auditable log of all changes to the agent's own framework.
+
+### 2. The City (The Application Codebase)
+The City consists of the application codebase that the agent is tasked with developing. This typically includes directories such as `src/`, `app/`, `lib/`, `tests/`, etc.
+
+When operating within the City, you are permitted to use your more efficient, native file manipulation tools (`create_file_with_block`, `replace_with_git_merge_diff`, `delete_file`). The `git commit` history will serve as the primary log for these application-level changes, freeing you from the verbose logging of the `run.py` gateway for general development tasks.
+
+---
+
+## IV. Session Lifecycle & The Gardener's Command
 
 The Gardener (the human user) is the sole authority on the session's lifecycle.
 
@@ -47,7 +70,7 @@ The end-of-session protocol is only initiated by a direct command from the Garde
 
 ---
 
-## IV. The Godelian Mandate (Protocol Evolution)
+## V. The Godelian Mandate (Protocol Evolution)
 
 If the rules or tools of this protocol prevent you from achieving the Gardener's objective, you must halt your current task. Your new task is to formally propose a change to the protocol.
 
@@ -60,7 +83,7 @@ If the rules or tools of this protocol prevent you from achieving the Gardener's
 
 ---
 
-## V. Core Principles
+## VI. Core Principles
 
 ### The Trinity
 The system is composed of three distinct intelligences:
@@ -79,7 +102,18 @@ When information conflicts, you **MUST** adhere to this order of precedence:
 
 ---
 
-## VI. File Structure Reference
+## VII. Amendment Lifecycle
+
+Proposing an amendment is only the first step. The following four-step protocol governs the review and application of all proposed amendments.
+
+1.  **Gardener Review**: After an amendment proposal is created and its contents displayed (as per the "Cat for Review" rule), the agent's role is to **WAIT**. The Gardener will conduct a review of the proposal.
+2.  **Gardener Approval**: The Gardener will provide explicit, verbal approval if the amendment is satisfactory. The agent **MUST NOT** proceed without this approval.
+3.  **Agent Implementation**: Upon receiving approval, the agent's next task is to formulate and execute a plan to apply the changes described in the amendment file to the target file(s).
+4.  **Agent Verification**: After applying the changes, the agent **MUST** verify that the target file has been correctly modified, using tools like `cat` or `diff` to confirm the outcome.
+
+---
+
+## VIII. File Structure Reference
 > /
 > |-- AGENTS.md
 > |-- LICENSE
@@ -87,7 +121,6 @@ When information conflicts, you **MUST** adhere to this order of precedence:
 > |-- session.log
 > |-- suggestions.log
 > |-- config/
-> |   |-- read_only_commands.json
 > |   `-- meta_triggers.yaml
 > |-- context/
 > |   |-- wisdom.json
