@@ -29,7 +29,16 @@ def main():
 
     command_to_run = args.command
     
-    if "consolidate_handoff.py" in command_to_run:
+    # Check if the command is specifically for running the handoff script.
+    # The original check was a broad substring search, which was buggy.
+    command_parts = command_to_run.strip().split()
+    is_handoff_execution = (
+        len(command_parts) >= 2 and
+        'python' in command_parts[0] and # handles python, python3
+        command_parts[1] == 'scripts/consolidate_handoff.py'
+    )
+
+    if is_handoff_execution:
         if os.path.exists(SESSION_LOG_FILE):
             with open(SESSION_LOG_FILE, 'rb') as f:
                 session_data_b64 = base64.b64encode(f.read()).decode('utf-8')

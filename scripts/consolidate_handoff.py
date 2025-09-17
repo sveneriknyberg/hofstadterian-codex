@@ -27,18 +27,29 @@ def parse_handoff_notes():
     
     with open(HANDOFF_NOTES_FILE, 'r') as f:
         content = f.read()
-    
+
+    # Define placeholders to ignore
+    summary_placeholder = "(Provide a one-paragraph summary of the work accomplished in this session.)"
+    decisions_placeholder = "(List the significant decisions made, one per line, starting with a hyphen.)"
+    lessons_placeholder = "(List any important lessons learned from errors or unexpected behavior, one per line, starting with a hyphen.)"
+
     summary_match = re.search(r'## Summary\s*\n(.*?)(?=\n--|$)', content, re.DOTALL)
     if summary_match:
-        notes['summary'] = summary_match.group(1).strip()
+        summary_text = summary_match.group(1).strip()
+        if summary_text != summary_placeholder:
+            notes['summary'] = summary_text
     
     decisions_match = re.search(r'## Key Decisions\s*\n(.*?)(?=\n--|$)', content, re.DOTALL)
     if decisions_match:
-        notes['decisions'] = [line.strip('- ').strip() for line in decisions_match.group(1).strip().split('\n') if line.strip().startswith('- ')]
+        all_decisions = [line.strip('- ').strip() for line in decisions_match.group(1).strip().split('\n') if line.strip().startswith('- ')]
+        # Filter out the placeholder text
+        notes['decisions'] = [d for d in all_decisions if d != decisions_placeholder]
 
     lessons_match = re.search(r'## Lessons Learned\s*\n(.*?)(?=\n--|$)', content, re.DOTALL)
     if lessons_match:
-        notes['lessons'] = [line.strip('- ').strip() for line in lessons_match.group(1).strip().split('\n') if line.strip().startswith('- ')]
+        all_lessons = [line.strip('- ').strip() for line in lessons_match.group(1).strip().split('\n') if line.strip().startswith('- ')]
+        # Filter out the placeholder text
+        notes['lessons'] = [l for l in all_lessons if l != lessons_placeholder]
         
     return notes
 

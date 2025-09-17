@@ -1,0 +1,8 @@
+{
+  "amendment_id": "amendment_20250917023222.json",
+  "timestamp_utc": "2025-09-17T02:32:22.797800+00:00",
+  "status": "proposed",
+  "target_file": "scripts/run.py",
+  "justification": "test",
+  "proposed_changes": "print(\"hello\")"
+}
