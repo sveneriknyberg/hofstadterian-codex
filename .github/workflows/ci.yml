@@ -1,0 +1,23 @@
+name: ci
+
+# Minimal CI (added 2026-11-11, decision 453 estate sweep): this repo has no test
+# suite; the honest check today is that dependencies install and every script
+# compiles. Grow this when tests land.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: python -m compileall -q scripts
